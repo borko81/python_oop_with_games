@@ -1,12 +1,30 @@
+class Channels:
+
+    def __init__(self):
+        self.channels = [2, 4, 6]
+
+    def max_pack(self):
+        self.channels.extend([7, 8, 9])
+
+    def __len__(self):
+        return len(self.channels)
+
+    def __getitem__(self, item):
+        return self.channels[item]
+
+    def show_channels(self):
+        return self.channels
+
+
 class TV:
     MAX_VOLUME = 100
     MAX_BRIGHT = 10
 
-    def __init__(self):
+    def __init__(self, channels: Channels):
         self.is_on = False
         self.bright = 0
         self.volume = 0
-        self.programs = [2, 4, 5, 8, 10]
+        self.programs = channels
         self.current_chanel = 0
         self.mute = False
 
@@ -52,9 +70,12 @@ class TV:
 
 
 if __name__ == '__main__':
-    tv = TV()
+    c = Channels()
+    c.max_pack()
+    tv = TV(c)
     tv.power()
     tv.volume_up()
     tv.volume_down()
     print(tv.volume, tv.mute)
     tv.change_chanel(1)
+    print(tv.programs.show_channels())
