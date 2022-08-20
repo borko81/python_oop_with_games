@@ -30,6 +30,8 @@ score = 50
 shuffle_deck = shuffle(starting_deck)
 
 for _ in range(NCARDS):
+    if score <= 0:
+        break
     current_card = getCard(shuffle_deck)
     print(f"Rank is {rank} suit is {suit} and value is {value}".format(**current_card))
     next_card = getCard(shuffle_deck)
@@ -50,3 +52,5 @@ for _ in range(NCARDS):
     print(next_card)
     print(correct, 'Score is %d' % score)
     correct = False
+
+print("Game finish, score is %d" % score)
