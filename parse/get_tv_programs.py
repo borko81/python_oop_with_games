@@ -1,6 +1,10 @@
-import requests
 from bs4 import BeautifulSoup as bs
 import asyncio
+import httpx
+from datetime import datetime
+import sys
+
+time_now = datetime.now().time()
 
 URLS = [
     'https://www.тв-програма.bg/tv/btv/',
@@ -23,9 +27,10 @@ class ShowTime:
         self.shows = []
 
     async def return_network_data(self):
-        data = requests.get(self.url)
-        soup = bs(data.text, 'html.parser')
-        return soup
+        async with httpx.AsyncClient() as client:
+            data = await client.get(self.url)
+            soup = bs(data.text, 'html.parser')
+            return soup
 
     async def read_result(self):
         table = await self.return_network_data()
@@ -39,7 +44,14 @@ class ShowTime:
             self.shows.append(row.find('a').text.strip())
 
     def __repr__(self):
-        return "\n".join([f"{show_time} - {show_name}" for show_time, show_name in zip(self.hours, self.shows)])
+        return "\n".join(
+            [
+                '\033[91m' + f"{show_time} - {show_name}" + "\033[0m"
+                if datetime.strptime(show_time, "%H:%M").time() > time_now
+                else f"{show_time} - {show_name}"
+                for show_time, show_name in
+                zip(self.hours, self.shows)
+            ])
 
 
 async def show_me_result(url):
@@ -54,5 +66,13 @@ async def main():
     return res
 
 
+def ask_for_close():
+    print()
+    ask_for_close_windows = input("Close cmd y or n :")
+    if ask_for_close_windows in ['y', 'Y']:
+        sys.exit()
+
+
 if __name__ == '__main__':
     asyncio.run(main())
+    ask_for_close()
